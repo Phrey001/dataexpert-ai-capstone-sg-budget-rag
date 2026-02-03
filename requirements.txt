@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+openai
+requests
+python-dotenv
+langchain
+langchain-openai
+beautifulsoup4
+pypdf
+langsmith
+pymilvus
+sentence-transformers
