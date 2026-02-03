@@ -11,6 +11,9 @@ This pipeline:
 - generates dense vectors locally (no LLM API usage)
 - generates sparse vectors using the custom BM25 encoder
 
+These PDFs are a manually curated, canonical set of Singapore budget documents
+used for reproducible ingestion and evaluation. Source URLs are not readily and reliably scriptable.
+
 ## Directory conventions
 
 The loader expects files under this pattern:
