@@ -1,0 +1,141 @@
+:root {
+  --bg: #f4efe6;
+  --panel: #fffdf9;
+  --ink: #14261d;
+  --muted: #5a6c62;
+  --accent: #0f7a4a;
+  --accent-2: #0c5c37;
+  --error-bg: #ffe8e2;
+  --error-ink: #7f1f16;
+  --line: #d9e3dc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans", "Trebuchet MS", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at top right, #e2f4df, transparent 40%), var(--bg);
+}
+
+.app {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem 2rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+}
+
+.subtitle {
+  margin: 0.5rem 0 1.25rem;
+  color: var(--muted);
+}
+
+.scope-note {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d7dfd8;
+  border-left: 4px solid #8aa99a;
+  border-radius: 10px;
+  background: #f7faf8;
+  color: #30463b;
+  font-size: 0.93rem;
+}
+
+.scope-note h2 {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+}
+
+.scope-note p {
+  margin: 0.25rem 0;
+  line-height: 1.4;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 16px rgba(18, 38, 29, 0.05);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.75rem;
+  font: inherit;
+  resize: vertical;
+  background: #fff;
+}
+
+.row {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--accent-2);
+}
+
+button:disabled {
+  background: #9fb8a8;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: var(--muted);
+}
+
+#answer {
+  white-space: pre-wrap;
+}
+
+.detail {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.error {
+  background: var(--error-bg);
+  border-color: #f7c4b5;
+  color: var(--error-ink);
+}
+
+.hidden {
+  display: none;
+}

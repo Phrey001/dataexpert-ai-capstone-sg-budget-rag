@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SG Budget Agent</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>SG Budget Agent</h1>
+      <p class="subtitle">Ask budget-policy questions and review confidence.</p>
+
+      <section class="scope-note" aria-label="Scope note">
+        <h2>Scope note</h2>
+        <p>This Q&amp;A system is not an official government FAQ.</p>
+        <p>
+          <b>Data source:</b> Answers are generated only from Singapore Budget Statements, Annex and Round-Up Speeches from FY2016–FY2025
+          within the project’s document scope.<br>
+          <br>
+          <b>Bot accuracy:</b> As an automated system, this tool may misinterpret or miss relevant information; users should confirm details directly from the cited sources.<br>
+          <br>
+          <b>Not an eligibility checker:</b> This system does not determine individual eligibility or payout amounts 
+          and does not replace official eligibility tools. <br>
+          <br>
+          <b>Retrieval & citation, not analysis:</b> The system’s role is to retrieve, summarize, and cite relevant 
+          budget policy documents based on the query. It does not perform financial planning, legal interpretation, or 
+          personalized policy analysis. <br>
+          <br>
+          <b>Encourage primary-source due diligence:</b> Users are encouraged to review the cited evidence or 
+          alternatives directly for full context and authoritative details. <br>
+          <br>
+        </p>
+        <p>It does not reference other government websites, agencies, or eligibility calculators.</p>
+      </section>
+
+      <form id="ask-form" class="card">
+        <label for="query">Query</label>
+        <textarea id="query" rows="5" placeholder="What are FY2025 productivity measures?" required></textarea>
+        <div class="row">
+          <button id="submit-btn" type="submit">Ask</button>
+        </div>
+      </form>
+
+      <section id="error-banner" class="card error hidden"></section>
+
+      <section id="result" class="card hidden">
+        <h2>Answer</h2>
+        <p id="answer"></p>
+        <p id="applicability-note" class="detail hidden"></p>
+        <p id="uncertainty-note" class="detail hidden"></p>
+        <div class="meta">
+          <span>Confidence: <strong id="confidence">-</strong></span>
+          <span>Final reason: <strong id="final-reason">-</strong></span>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

@@ -58,7 +58,7 @@ def list_pdf_files(data_root: Path) -> List[Path]:
 
 def infer_doc_type(pdf_path: Path, data_root: Path) -> str:
     """Infer doc types with validation.
-    Per design, should only exist one from ('budget_statements', 'round_up_speech')
+    Per design, should only exist one from ('budget_statements', 'round_up_speech', 'annex')
     """
     rel = pdf_path.relative_to(data_root)  # define relative path to data folder
     if len(rel.parts) < 2:  # .parts is a tuple of the individual components (directories and file name) of the path.
