@@ -20,7 +20,7 @@ Open:
 
 - `GET /health`
 - `POST /ask`
-  - body: `{"query":"...","top_k":...,"top_n":...}`
+  - body: `{"query":"...","top_k":...,"top_n":...,"requested_years":[2024,2025]}`
   - response fields: `answer`, `confidence`, `state_history`, `final_reason`, `applicability_note`, `uncertainty_note`
 
 Note: final answer text (with evidence citations) comes from synthesis. Applicability and uncertainty notes are surfaced as separate API/UI metadata from final reflection.

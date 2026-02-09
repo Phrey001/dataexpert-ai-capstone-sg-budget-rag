@@ -8,13 +8,7 @@ python -m src.agents.runtime --query "What are FY2025 productivity measures?"
 
 ## Useful Commands
 
-Run manual showcase demos:
-
-```bash
-bash scripts/demo_runtime_queries.sh
-```
-
-`scripts/` is intentionally used for runnable demos and future utility scripts (keeps tooling in one standard place).
+Demo queries are run manually in the UI or via CLI.
 Canonical query catalog: `docs/agents/sample_queries.md`.
 Run any one query manually with:
 
@@ -37,7 +31,6 @@ Core:
 - `OPENAI_API_KEY`
 - `MILVUS_URI`
 - `MILVUS_TOKEN`
-- `AGENT_MAX_CYCLES`
 - `AGENT_CONFIDENCE_STRONG`
 - `AGENT_CONFIDENCE_MEDIUM`
 - `AGENT_CONFIDENCE_LOW`
@@ -90,7 +83,6 @@ Tracing:
 
 - Most operational knobs come from environment-backed settings in `src/agents/core/config.py`.
 - Confidence-band cutoffs are environment-backed in `src/agents/core/config.py` (not user-facing API inputs).
-- Manager loop safety fuse is internal via `AGENT_MAX_CYCLES` in `src/agents/core/config.py`.
 - Synthesis/reflection model and temperature are developer/ops knobs from `src/agents/core/config.py` and are not user API inputs.
 
 ## Runtime Output
@@ -108,6 +100,7 @@ Note:
 - Answer text comes from synthesis output; applicability/uncertainty come from final reflection output.
 - `confidence` and `final reason` remain separate metadata fields.
 - When year intent is ambiguous, retrieval does not filter by year; rerank still favors recent years via a soft boost.
+ - Year filtering is driven by the UI’s FY selection (`requested_years`). If no years are selected, no year filter is applied.
 
 ## Failure Modes
 

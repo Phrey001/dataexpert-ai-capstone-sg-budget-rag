@@ -24,7 +24,7 @@
 - Runtime/env tunables are centralized in `src/agents/core/config.py`; confidence-band thresholds are env-backed in the same config.
 - Synthesis/reflection model + temperature knobs are in `src/agents/core/config.py` (internal dev/ops tuning, not user API toggles).
 - Trace payload shapes/builders: `src/agents/core/trace_types.py`, `src/agents/core/tracing.py`
-- Planner query revision or year intent: `src/agents/planner/service.py`, `src/agents/planner/year_intent.py`
+- Planner query revision or year intent: `src/agents/planner/service.py`
 - Retrieval filters/rerank behavior: `src/agents/specialists/retrieval.py`, `src/agents/specialists/rerank.py`
 - Synthesis/reflection prompting: `src/agents/prompts/`, `src/agents/specialists/synthesis.py`, `src/agents/specialists/reflection.py`
 - Guardrail policy behavior: `src/agents/guardrails/service.py`

@@ -31,7 +31,6 @@ class AgentConfig(BaseSettings):
     - retrieve_recency_boost: specialists/retrieval.py
     - rerank_recency_boost: specialists/rerank.py
     - confidence_*: core/manager.py
-    - max_cycles: core/manager.py
     - planner_model/temperature: planner/service.py
     - synthesis_model/temperature: specialists/service.py, specialists/synthesis.py
     - reflection_model/temperature: specialists/service.py, specialists/reflection.py
@@ -45,18 +44,17 @@ class AgentConfig(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore", case_sensitive=False, populate_by_name=True)
 
     # Frequently tuned (retrieval/rerank/behavior)
-    top_k: int = Field(default=200, alias="AGENT_TOP_K")
-    top_n: int = Field(default=100, alias="AGENT_TOP_N")  # return top_n from each list, so return 2*top_n
-    rerank_candidate_limit: int = Field(default=100, alias="AGENT_RERANK_CANDIDATE_LIMIT")  # keep limit after rerank
+    top_k: int = Field(default=180, alias="AGENT_TOP_K")
+    top_n: int = Field(default=80, alias="AGENT_TOP_N")  # return top_n from each list, so return 2*top_n
+    rerank_candidate_limit: int = Field(default=60, alias="AGENT_RERANK_CANDIDATE_LIMIT")  # keep limit after rerank
     recent_year_window: int = Field(default=5, alias="AGENT_RECENT_YEAR_WINDOW")
     corpus_latest_fy: int = Field(default=2025, alias="AGENT_CORPUS_LATEST_FY")
-    retrieve_recency_boost: float = Field(default=0.8, alias="AGENT_RETRIEVE_RECENCY_BOOST")
-    rerank_recency_boost: float = Field(default=0.8, alias="AGENT_RERANK_RECENCY_BOOST")
+    retrieve_recency_boost: float = Field(default=0.4, alias="AGENT_RETRIEVE_RECENCY_BOOST")
+    rerank_recency_boost: float = Field(default=0.4, alias="AGENT_RERANK_RECENCY_BOOST")
     confidence_strong: float = Field(default=0.80, alias="AGENT_CONFIDENCE_STRONG")
     confidence_medium: float = Field(default=0.70, alias="AGENT_CONFIDENCE_MEDIUM")
     confidence_low: float = Field(default=0.50, alias="AGENT_CONFIDENCE_LOW")
     confidence_very_low: float = Field(default=0.30, alias="AGENT_CONFIDENCE_VERY_LOW")
-    max_cycles: int = Field(default=3, alias="AGENT_MAX_CYCLES")
 
     # Model knobs (tuned occasionally)
     openai_model: str = Field(default="gpt-4o-mini", alias="AGENT_OPENAI_MODEL")
@@ -92,7 +90,6 @@ class AgentConfig(BaseSettings):
     @field_validator(
         "top_k",
         "top_n",
-        "max_cycles",
         "mcp_timeout_seconds",
         "recent_year_window",
         "corpus_latest_fy",

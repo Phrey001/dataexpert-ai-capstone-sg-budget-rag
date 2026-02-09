@@ -3,6 +3,8 @@ const API_BASE_URL = window.AGENT_API_BASE_URL || window.location.origin;
 const form = document.getElementById("ask-form");
 const queryInput = document.getElementById("query");
 const submitBtn = document.getElementById("submit-btn");
+const fyAll = document.getElementById("fy-all");
+const fySelect = document.getElementById("fy-select");
 
 const errorBanner = document.getElementById("error-banner");
 const resultPanel = document.getElementById("result");
@@ -11,7 +13,6 @@ const answerEl = document.getElementById("answer");
 const applicabilityEl = document.getElementById("applicability-note");
 const uncertaintyEl = document.getElementById("uncertainty-note");
 const confidenceEl = document.getElementById("confidence");
-const finalReasonEl = document.getElementById("final-reason");
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -20,6 +21,10 @@ form.addEventListener("submit", async (event) => {
   hideOutputs();
 
   const payload = { query: queryInput.value.trim() };
+  const selectedYears = Array.from(fySelect.selectedOptions).map((option) => Number(option.value));
+  if (!fyAll.checked && selectedYears.length > 0) {
+    payload.requested_years = selectedYears;
+  }
 
   if (!payload.query) {
     showError("Please enter a query.");
@@ -61,7 +66,6 @@ function renderResult(data) {
     data.uncertainty_note,
   );
   confidenceEl.textContent = Number(data.confidence ?? 0).toFixed(3);
-  finalReasonEl.textContent = data.final_reason || "-";
   resultPanel.classList.remove("hidden");
 }
 
@@ -69,6 +73,15 @@ function setLoading(isLoading) {
   submitBtn.disabled = isLoading;
   submitBtn.textContent = isLoading ? "Asking..." : "Ask";
 }
+
+fyAll.addEventListener("change", () => {
+  fySelect.disabled = fyAll.checked;
+  if (fyAll.checked) {
+    fySelect.selectedIndex = -1;
+  }
+});
+
+fySelect.disabled = fyAll.checked;
 
 function hideOutputs() {
   resultPanel.classList.add("hidden");

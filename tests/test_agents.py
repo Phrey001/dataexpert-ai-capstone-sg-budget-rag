@@ -13,7 +13,6 @@ from src.agents.planner.service import PlannerAI
 from src.agents.runtime import main as runtime_main
 from src.agents.specialists.service import GuardrailsViolationError, MCPReadinessError, Specialists
 from src.agents.core.types import ReflectionResult, RetrievalHit, UserQuery
-from src.agents.planner.year_intent import infer_year_intent
 
 
 def setUpModule():
@@ -114,12 +113,6 @@ class PlannerTests(unittest.TestCase):
                     context={
                         "original_query": "Original user question",
                         "revised_query": "Stale revised query",
-                        "reflection_reason": "low_coverage",
-                        "reflection_confidence": 0.21,
-                        "reflection_comments": "Need broader evidence",
-                        "prior_hit_paths": ["a.pdf", "b.pdf"],
-                        "prior_state_history": ["execute_plan"],
-                        "cycle_index": 2,
                     },
                 )
             )
@@ -127,28 +120,29 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(plan.revised_query, "Revised query from planner")
         self.assertEqual(mock_revision.call_count, 1)
 
-    def test_year_intent_recent_is_added_to_retrieve_params(self):
+    def test_requested_years_are_added_to_retrieve_params(self):
         with patch.object(
             self.planner,
             "_generate_planner_output",
             return_value={"revised_query": "recent productivity support", "coherence": "coherent", "coherence_reason": None},
         ):
-            plan = self.planner.build_plan(UserQuery(query="What are the latest productivity measures?"))
+            plan = self.planner.build_plan(
+                UserQuery(query="What are FY2024 measures?", context={"requested_years": [2024, 2025]})
+            )
         retrieve_params = plan.steps[0].params
-        self.assertEqual(retrieve_params["year_mode"], "recent")
-        self.assertEqual(retrieve_params["recent_year_window"], self.config.recent_year_window)
+        self.assertEqual(retrieve_params["year_mode"], "explicit")
+        self.assertEqual(retrieve_params["requested_years"], [2024, 2025])
 
-    def test_year_intent_long_horizon_enables_broad_mode(self):
+    def test_no_requested_years_defaults_to_no_filter(self):
         with patch.object(
             self.planner,
             "_generate_planner_output",
-            return_value={"revised_query": "trend analysis since fy2020", "coherence": "coherent", "coherence_reason": None},
+            return_value={"revised_query": "productivity support", "coherence": "coherent", "coherence_reason": None},
         ):
-            plan = self.planner.build_plan(UserQuery(query="Show trend in productivity measures since FY2020"))
+            plan = self.planner.build_plan(UserQuery(query="What are productivity measures?"))
         retrieve_params = plan.steps[0].params
-        self.assertEqual(retrieve_params["year_mode"], "range")
-        self.assertTrue(retrieve_params["allow_broad_horizon"])
-        self.assertGreaterEqual(len(retrieve_params["requested_years"]), 2)
+        self.assertEqual(retrieve_params["year_mode"], "none")
+        self.assertEqual(retrieve_params["requested_years"], [])
 
     def test_fail_fast_on_empty_revised_query(self):
         with patch.object(
@@ -177,7 +171,6 @@ class PlannerTests(unittest.TestCase):
             output = self.planner._generate_planner_output(
                 original_query="original",
                 context={},
-                plan_context=self.planner._build_plan_context({}),
             )
         self.assertEqual(output["revised_query"], "revised by builder")
         self.assertEqual(output["coherence"], "coherent")
@@ -199,20 +192,6 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(plan.coherence_reason, "query_not_interpretable")
 
 
-class YearIntentTests(unittest.TestCase):
-    def test_infer_explicit_year(self):
-        intent = infer_year_intent("Compare FY2025 measures", "compare fy2025 support", current_year=2025)
-        self.assertEqual(intent["requested_year_mode"], "explicit")
-        self.assertEqual(intent["requested_years"], [2025])
-
-    def test_infer_recent(self):
-        intent = infer_year_intent("What are the latest productivity measures?", "latest productivity support", current_year=2025)
-        self.assertEqual(intent["requested_year_mode"], "recent")
-
-    def test_infer_range_since(self):
-        intent = infer_year_intent("Show trends since FY2020", "trends since fy2020", current_year=2025)
-        self.assertEqual(intent["requested_year_mode"], "range")
-        self.assertGreaterEqual(len(intent["requested_years"]), 2)
 
 
 class StyleLoopSpecialists:

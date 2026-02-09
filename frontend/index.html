@@ -9,7 +9,7 @@
   <body>
     <main class="app">
       <h1>SG Budget Agent</h1>
-      <p class="subtitle">Ask budget-policy questions and review confidence.</p>
+      <p class="subtitle">Ask budget-policy questions with a confidence-rated response.</p>
 
       <section class="scope-note" aria-label="Scope note">
         <h2>Scope note</h2>
@@ -37,6 +37,26 @@
       <form id="ask-form" class="card">
         <label for="query">Query</label>
         <textarea id="query" rows="5" placeholder="What are FY2025 productivity measures?" required></textarea>
+        <div class="fy-filter">
+          <div class="fy-header">FY filter</div>
+          <label class="fy-option">
+            <input id="fy-all" type="checkbox" checked />
+            All (default)
+          </label>
+          <select id="fy-select" multiple>
+            <option value="2016">FY2016</option>
+            <option value="2017">FY2017</option>
+            <option value="2018">FY2018</option>
+            <option value="2019">FY2019</option>
+            <option value="2020">FY2020</option>
+            <option value="2021">FY2021</option>
+            <option value="2022">FY2022</option>
+            <option value="2023">FY2023</option>
+            <option value="2024">FY2024</option>
+            <option value="2025">FY2025</option>
+          </select>
+          <div class="fy-hint">Hold Ctrl / Cmd to select multiple years.</div>
+        </div>
         <div class="row">
           <button id="submit-btn" type="submit">Ask</button>
         </div>
@@ -51,7 +71,6 @@
         <p id="uncertainty-note" class="detail hidden"></p>
         <div class="meta">
           <span>Confidence: <strong id="confidence">-</strong></span>
-          <span>Final reason: <strong id="final-reason">-</strong></span>
         </div>
       </section>
 

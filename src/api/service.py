@@ -57,8 +57,12 @@ class AgentAPIService:
         config = self._config_with_overrides(payload)
         planner = PlannerAI(config)
         manager = Manager(config)
+        context = {}
+        if payload.requested_years:
+            context["requested_years"] = payload.requested_years
+        user_query = UserQuery(query=payload.query, context=context or None)
         result = manager.run(
-            user_query=UserQuery(query=payload.query),
+            user_query=user_query,
             planner=planner,
             specialists=self._specialists,
         )

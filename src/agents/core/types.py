@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Literal, Optional
 PlanStepName = Literal["retrieve", "rerank", "synthesize", "reflect"]
 ManagerStateName = Literal["execute_plan", "success", "fail"]
 ReflectionReason = Literal["low_coverage", "ok"]
-YearMode = Literal["explicit", "recent", "range", "none"]
+YearMode = Literal["explicit", "none"]
 CoherenceLabel = Literal["coherent", "incoherent"]
 
 
@@ -15,20 +15,6 @@ CoherenceLabel = Literal["coherent", "incoherent"]
 class UserQuery:
     query: str
     context: Optional[Dict[str, Any]] = None
-
-
-@dataclass
-class PlanContext:
-    cycle_index: int = 0
-    previous_answer: Optional[str] = None
-    reflection_reason: Optional[ReflectionReason] = None
-    reflection_confidence: Optional[float] = None
-    reflection_comments: Optional[str] = None
-    prior_hit_paths: List[str] = field(default_factory=list)
-    prior_state_history: List[str] = field(default_factory=list)
-    requested_years: List[int] = field(default_factory=list)
-    requested_year_mode: YearMode = "none"
-    allow_broad_horizon: bool = False
 
 
 @dataclass
@@ -46,7 +32,6 @@ class ExecutionPlan:
     revised_query: str
     coherence: CoherenceLabel = "coherent"
     coherence_reason: Optional[str] = None
-    plan_context: PlanContext = field(default_factory=PlanContext)
 
 
 @dataclass

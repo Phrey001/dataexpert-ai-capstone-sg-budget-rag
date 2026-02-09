@@ -15,7 +15,6 @@ from .types import ManagerState, OrchestrationResult, ReflectionResult, Retrieva
 
 @dataclass
 class RunContext:
-    cycle: int = 0
     latest_answer: str = ""
     latest_confidence: float = 0.0
     latest_hits: list[RetrievalHit] = field(default_factory=list)
@@ -27,7 +26,7 @@ class RunContext:
 
 
 class Manager:
-    """State-machine manager that executes one plan pass with mandatory re-synthesis."""
+    """State-machine manager that executes a single deterministic plan pass."""
 
     def __init__(self, config: AgentConfig):
         self.config = config
@@ -49,30 +48,22 @@ class Manager:
             "final_reason": None,
         }
 
-        max_cycles = self.config.max_cycles
-        while state.state not in {"success", "fail"} and ctx.cycle < max_cycles:
-            ctx.cycle += 1
-            try:
-                if state.state == "execute_plan":
-                    transition_reason = self._handle_execute(ctx, state, plan, original_query, specialists, trace)
-                else:
-                    state.state = "fail"
-                    transition_reason = "unknown_state"
-            except GuardrailsViolationError as exc:
-                ctx.latest_answer = exc.safe_reply
-                ctx.latest_confidence = 0.0
-                ctx.latest_reflection = ReflectionResult(reason="low_coverage", confidence=0.0, comments=exc.reason)
+        try:
+            if state.state == "execute_plan":
+                transition_reason = self._handle_execute(ctx, state, plan, original_query, specialists, trace)
+            else:
                 state.state = "fail"
-                transition_reason = "guardrail_block"
-                trace["guardrail_event"] = {"stage": exc.stage, "reason": exc.reason}
-
-            trace["transitions"].append(build_transition_payload(cycle=ctx.cycle, state=state, reason=transition_reason))
-            ctx.state_history.append(state.state)
-
-        if state.state not in {"success", "fail"}:
+                transition_reason = "unknown_state"
+        except GuardrailsViolationError as exc:
+            ctx.latest_answer = exc.safe_reply
+            ctx.latest_confidence = 0.0
+            ctx.latest_reflection = ReflectionResult(reason="low_coverage", confidence=0.0, comments=exc.reason)
             state.state = "fail"
-            trace["transitions"].append(build_transition_payload(cycle=ctx.cycle, state=state, reason="max_cycles_exceeded"))
-            ctx.state_history.append(state.state)
+            transition_reason = "guardrail_block"
+            trace["guardrail_event"] = {"stage": exc.stage, "reason": exc.reason}
+
+        trace["transitions"].append(build_transition_payload(cycle=1, state=state, reason=transition_reason))
+        ctx.state_history.append(state.state)
 
         trace["final_state"] = state.state
         trace["final_reason"] = trace["transitions"][-1]["reason"] if trace["transitions"] else None
@@ -132,7 +123,7 @@ class Manager:
         )
         trace["steps"].append(
             build_step_payload(
-                cycle=ctx.cycle,
+                cycle=1,
                 state_name=state.state,
                 original_query=original_query,
                 revised_query=plan.revised_query,

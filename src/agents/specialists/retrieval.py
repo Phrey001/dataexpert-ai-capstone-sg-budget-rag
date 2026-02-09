@@ -1,4 +1,11 @@
-"""Retrieval helpers for hybrid Milvus search and year-aware filtering."""
+"""Retrieval helpers for hybrid Milvus search and year-aware filtering.
+
+Pipeline:
+- build optional FY filter
+- run dense + sparse searches
+- merge with RRF, then apply recency tier boost
+- return hits with traceable metadata
+"""
 
 from datetime import UTC, datetime
 from typing import Any, Optional
@@ -12,29 +19,15 @@ def build_year_filter_expr(
     retrieve_context: RetrieveContextPayload,
     *,
     fy_filtering_enabled: bool,
-    recent_year_window: int,
 ) -> Optional[str]:
     if not fy_filtering_enabled:
         return None
 
     year_mode = str(retrieve_context.get("year_mode", "none"))
     requested_years = [int(year) for year in retrieve_context.get("requested_years", []) if str(year).isdigit()]
-    allow_broad_horizon = bool(retrieve_context.get("allow_broad_horizon", False))
-    window = max(1, int(retrieve_context.get("recent_year_window", recent_year_window)))
-    current_year = datetime.now(UTC).year
 
     if year_mode == "explicit" and requested_years:
         years = sorted(set(requested_years))
-        return f"financial_year in [{', '.join(str(year) for year in years)}]"
-
-    if year_mode == "range" and len(requested_years) >= 2:
-        start, end = min(requested_years), max(requested_years)
-        return f"financial_year >= {start} and financial_year <= {end}"
-
-    if year_mode == "recent":
-        if allow_broad_horizon:
-            return None
-        years = [current_year - idx for idx in range(window)]
         return f"financial_year in [{', '.join(str(year) for year in years)}]"
 
     return None
@@ -61,7 +54,6 @@ def run_retrieve(
     year_expr = build_year_filter_expr(
         retrieve_context,
         fy_filtering_enabled=fy_filtering_enabled,
-        recent_year_window=recent_year_window,
     )
 
     dense_limit = max(1, int(top_k))
@@ -113,6 +105,7 @@ def _merge_hits(
     window = max(1, int(recent_year_window))
     boost = max(0.0, min(1.0, float(retrieve_recency_boost)))
 
+    # Apply a tiered recency boost at the merge stage (no hard exclusion).
     for row in merged.values():
         fy = row["entity"].get("financial_year")
         if isinstance(fy, int):

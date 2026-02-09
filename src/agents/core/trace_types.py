@@ -10,7 +10,6 @@ class RetrieveContextPayload(TypedDict, total=False):
     revised_query: str
     year_mode: YearMode
     requested_years: list[int]
-    allow_broad_horizon: bool
     recent_year_window: int
 
 
@@ -58,8 +57,3 @@ class TracePayload(TypedDict, total=False):
     guardrail_event: GuardrailEventPayload
     coherence: CoherencePayload
 
-
-class YearIntentPayload(TypedDict):
-    requested_year_mode: YearMode
-    requested_years: list[int]
-    allow_broad_horizon: bool

@@ -9,7 +9,6 @@ States:
 
 Rules:
 - manager executes a single deterministic pass (retrieve → rerank → synthesize → reflect).
-- manager uses `AGENT_MAX_CYCLES` as a hard safety fuse; overflow yields terminal `max_cycles_exceeded`.
 - confidence bands determine terminal behavior for coherent queries:
   - `>= 0.80` -> success (`confidence_high`)
   - `0.70 - 0.80` -> success with caveat (`confidence_medium_caveated`)
@@ -69,9 +68,9 @@ Retrieval/rerank behavior:
 - candidate lists are merged with `rrf` and deduped by `chunk_id`.
 - reranking uses cross-encoder scores on merged candidates and applies a small recency boost (`AGENT_RERANK_RECENCY_BOOST`) after normalization.
 
-Year intent default:
-- if no explicit/range intent is detected, year mode defaults to `none` (no filter).
-- broad-horizon queries can expand the range (`allow_broad_horizon`).
+Year intent source:
+- year selection comes from UI `requested_years`.
+- if no years are selected, year mode defaults to `none` (no filter).
 
 Scoring details:
 - see `docs/agents/scoring.md` for the full scoring/ranking breakdown.

@@ -92,6 +92,42 @@ textarea {
   flex-wrap: wrap;
 }
 
+.fy-filter {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.fy-header {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.fy-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+}
+
+#fy-select {
+  margin-top: 0.5rem;
+  width: 100%;
+  min-height: 6.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+}
+
+.fy-hint {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 button {
   border: none;
   border-radius: 10px;

@@ -7,13 +7,11 @@ from .core.types import (
     ExecutionPlan,
     ManagerState,
     OrchestrationResult,
-    PlanContext,
     PlanStep,
     ReflectionResult,
     RetrievalHit,
     UserQuery,
 )
-from .planner.year_intent import infer_year_intent, normalize_year_mode
 
 ManagerAI = Manager
 
@@ -26,13 +24,10 @@ __all__ = [
     "ManagerAI",
     "ManagerState",
     "OrchestrationResult",
-    "PlanContext",
     "PlanStep",
     "PlannerAI",
     "ReflectionResult",
     "RetrievalHit",
     "Specialists",
     "UserQuery",
-    "infer_year_intent",
-    "normalize_year_mode",
 ]

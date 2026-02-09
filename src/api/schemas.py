@@ -9,6 +9,7 @@ class AskRequest(BaseModel):
     query: str
     top_k: int | None = None
     top_n: int | None = None
+    requested_years: list[int] | None = None
 
 
 class AskResponse(BaseModel):

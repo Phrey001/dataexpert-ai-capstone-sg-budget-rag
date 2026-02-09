@@ -29,6 +29,6 @@ python -m unittest -v tests.test_api
 - trace top-level keys remain stable:
   - `query_chain`, `transitions`, `steps`, `final_state`, `final_reason`
 - planner fails fast on invalid revised query
-- manager deterministic two-pass synthesis/reflection and confidence-band terminal semantics (high/caveated/partial/clarify)
+- manager deterministic single-pass synthesis/reflection and confidence-band terminal semantics (high/caveated/partial/clarify)
 - coherent low-confidence outputs still return synthesis answer; applicability/uncertainty are surfaced via reflection metadata
 - startup readiness failure returns exit code `2`
