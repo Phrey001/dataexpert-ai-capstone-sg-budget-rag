@@ -105,6 +105,22 @@ The loader is fail-fast:
 - vector count mismatch -> fail
 - existing collection dense dimension mismatch -> fail
 
+## Data quality checks (per source)
+
+These are lightweight, fail-fast checks applied during ingestion. Each source must pass at least two checks:
+
+### `budget_statements`
+- **Filename FY token:** `fyYYYY` must be present in the filename (extracts `financial_year`).
+- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
+
+### `round_up_speech`
+- **Directory convention:** file must sit under `data/round_up_speech/...` to infer `doc_type`.
+- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
+
+### `annex`
+- **Filename FY token:** `fyYYYY` must be present in the filename (extracts `financial_year`).
+- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
+
 ## Usage
 
 Example commands:
