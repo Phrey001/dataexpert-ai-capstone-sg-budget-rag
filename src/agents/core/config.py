@@ -24,6 +24,17 @@ except ImportError:
 class AgentConfig(BaseSettings):
     """Environment-backed configuration for agent orchestration.
 
+    Most touched knobs:
+    - top_k/top_n/rerank_candidate_limit
+    - recent_year_window + corpus_latest_fy
+    - retrieve_recency_boost + rerank_recency_boost
+    - confidence_* thresholds
+
+    Section map:
+    - Retrieval/Rerank knobs
+    - Model knobs
+    - Infra & guardrails
+
     Config usage map (selected):
     - top_k/top_n/rerank_candidate_limit: specialists/retrieval.py, specialists/rerank.py, core/manager.py
     - recent_year_window: planner/service.py, specialists/retrieval.py, specialists/rerank.py
@@ -43,21 +54,20 @@ class AgentConfig(BaseSettings):
     """
     model_config = SettingsConfigDict(extra="ignore", case_sensitive=False, populate_by_name=True)
 
-    # Frequently tuned (retrieval/rerank/behavior)
+    # Retrieval & rerank knobs (most frequently tuned)
     top_k: int = Field(default=180, alias="AGENT_TOP_K")
-    top_n: int = Field(default=80, alias="AGENT_TOP_N")  # return top_n from each list, so return 2*top_n
-    rerank_candidate_limit: int = Field(default=60, alias="AGENT_RERANK_CANDIDATE_LIMIT")  # keep limit after rerank
+    top_n: int = Field(default=80, alias="AGENT_TOP_N")  # final number of hits after rerank
+    rerank_candidate_limit: int = Field(default=60, alias="AGENT_RERANK_CANDIDATE_LIMIT")  # cap candidates before rerank
     recent_year_window: int = Field(default=5, alias="AGENT_RECENT_YEAR_WINDOW")
     corpus_latest_fy: int = Field(default=2025, alias="AGENT_CORPUS_LATEST_FY")
-    retrieve_recency_boost: float = Field(default=0.4, alias="AGENT_RETRIEVE_RECENCY_BOOST")
-    rerank_recency_boost: float = Field(default=0.4, alias="AGENT_RERANK_RECENCY_BOOST")
+    retrieve_recency_boost: float = Field(default=0.8, alias="AGENT_RETRIEVE_RECENCY_BOOST")  # multiplicative boost
+    rerank_recency_boost: float = Field(default=0.8, alias="AGENT_RERANK_RECENCY_BOOST")  # multiplicative boost
     confidence_strong: float = Field(default=0.80, alias="AGENT_CONFIDENCE_STRONG")
     confidence_medium: float = Field(default=0.70, alias="AGENT_CONFIDENCE_MEDIUM")
     confidence_low: float = Field(default=0.50, alias="AGENT_CONFIDENCE_LOW")
     confidence_very_low: float = Field(default=0.30, alias="AGENT_CONFIDENCE_VERY_LOW")
 
-    # Model knobs (tuned occasionally)
-    openai_model: str = Field(default="gpt-4o-mini", alias="AGENT_OPENAI_MODEL")
+    # Model knobs
     synthesis_model: str = Field(default="gpt-4o-mini", alias="AGENT_SYNTHESIS_MODEL")
     synthesis_temperature: float = Field(default=0.2, alias="AGENT_SYNTHESIS_TEMPERATURE")
     reflection_model: str = Field(default="gpt-4o-mini", alias="AGENT_REFLECTION_MODEL")
@@ -69,7 +79,7 @@ class AgentConfig(BaseSettings):
         default="cross-encoder/ms-marco-MiniLM-L-6-v2", alias="AGENT_CROSS_ENCODER_MODEL"
     )
 
-    # Less frequently tuned (infra/behavioral defaults)
+    # Infra & guardrails (rarely tuned)
     milvus_collection: str = Field(default="sg_budget_evidence", alias="AGENT_MILVUS_COLLECTION")
     mcp_enabled: bool = Field(default=True, alias="AGENT_MCP_ENABLED")
     mcp_strict: bool = Field(default=True, alias="AGENT_MCP_STRICT")
@@ -79,7 +89,7 @@ class AgentConfig(BaseSettings):
     mcp_synthesize_tool: str = Field(default="synthesize", alias="AGENT_MCP_SYNTHESIZE_TOOL")
     mcp_reflect_tool: str = Field(default="reflect", alias="AGENT_MCP_REFLECT_TOOL")
     hybrid_merge_strategy: str = Field(default="rrf", alias="AGENT_HYBRID_MERGE_STRATEGY")
-    hybrid_rrf_k: int = Field(default=60, alias="AGENT_HYBRID_RRF_K")
+    hybrid_rrf_k: int = Field(default=60, alias="AGENT_HYBRID_RRF_K")  # RRF k; higher flattens rank influence
     fy_filtering_enabled: bool = Field(default=True, alias="AGENT_FY_FILTERING_ENABLED")
     guardrails_enabled: bool = Field(default=True, alias="AGENT_GUARDRAILS_ENABLED")
     guardrails_input_policy: str = Field(default="block_safe_reply", alias="AGENT_GUARDRAILS_INPUT_POLICY")

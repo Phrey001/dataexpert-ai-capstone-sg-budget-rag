@@ -69,8 +69,12 @@ class PlannerAI:
         prompt = planner_prompts.build_planner_prompt(payload_json=json.dumps(payload))
         response = model.invoke(prompt)
         raw = str(getattr(response, "content", "")).strip()
-        parsed = self._parse_json(raw)
-        coherence = self._normalize_coherence(parsed.get("coherence"))
+        if raw.startswith("```"):
+            raw = raw.strip("`")
+            raw = raw.removeprefix("json").strip()
+        parsed = json.loads(raw)
+        coherence = str(parsed.get("coherence", "")).strip().lower()
+        coherence = "incoherent" if coherence == "incoherent" else "coherent"
         coherence_reason = str(parsed.get("coherence_reason", "")).strip() or None
         revised_query = str(parsed.get("revised_query", "")).strip()
         if not revised_query and coherence == "coherent":
@@ -80,21 +84,6 @@ class PlannerAI:
             "coherence": coherence,
             "coherence_reason": coherence_reason,
         }
-
-    def _parse_json(self, raw_text: str) -> Dict[str, Any]:
-        """Parse JSON from an LLM response, stripping optional code fences."""
-        raw = raw_text.strip()
-        if raw.startswith("```"):
-            raw = raw.strip("`")
-            raw = raw.removeprefix("json").strip()
-        return json.loads(raw)
-
-    def _normalize_coherence(self, value: Any) -> CoherenceLabel:
-        """Normalize coherence to the supported literal set."""
-        raw = str(value or "").strip().lower()
-        if raw == "incoherent":
-            return "incoherent"
-        return "coherent"
 
     def _get_planner_model(self):
         """Lazily construct the planner chat model."""

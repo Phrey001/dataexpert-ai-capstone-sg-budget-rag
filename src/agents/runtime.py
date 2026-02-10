@@ -1,5 +1,4 @@
 import argparse
-import json
 from typing import Optional, Sequence
 
 from dotenv import load_dotenv
@@ -51,13 +50,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     print("specialist_mode=real_mcp")
     print(f"confidence={result.confidence:.3f}")
     print(f"state_history={result.state_history}")
-    print(f"final_reason={result.trace.get('final_reason')}")
-    if result.trace.get("guardrail_event"):
-        print(f"guardrail_event={result.trace['guardrail_event']}")
+    print(f"final_reason={result.final_reason}")
+    if result.guardrail_event:
+        print(f"guardrail_event={result.guardrail_event}")
     print("answer:")
     print(result.answer)
-    print("trace:")
-    print(json.dumps(result.trace, indent=2, sort_keys=True))
     return 0
 
 

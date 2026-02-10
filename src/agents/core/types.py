@@ -1,11 +1,10 @@
 """Shared dataclasses and literals for planner-manager-specialist contracts."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, TypedDict
 
 
 PlanStepName = Literal["retrieve", "rerank", "synthesize", "reflect"]
-ManagerStateName = Literal["execute_plan", "success", "fail"]
 ReflectionReason = Literal["low_coverage", "ok"]
 YearMode = Literal["explicit", "none"]
 CoherenceLabel = Literal["coherent", "incoherent"]
@@ -52,9 +51,14 @@ class ReflectionResult:
     uncertainty_note: str = ""
 
 
-@dataclass
-class ManagerState:
-    state: ManagerStateName
+class RetrieveContextPayload(TypedDict, total=False):
+    original_query: str
+    revised_query: str
+    year_mode: YearMode
+    requested_years: list[int]
+    recent_year_window: int
+
+
 
 
 @dataclass
@@ -62,4 +66,7 @@ class OrchestrationResult:
     answer: str
     confidence: float
     state_history: List[str]
-    trace: Dict[str, Any]
+    final_reason: Optional[str] = None
+    reflection: Optional[ReflectionResult] = None
+    guardrail_event: Optional[Dict[str, Any]] = None
+    coherence: Optional[Dict[str, Any]] = None

@@ -6,7 +6,7 @@ from src.api.schemas import AskRequest, AskResponse, HealthResponse
 from src.api.security import assess_prompt_injection
 from src.api.service import AgentAPIService
 from src.agents.core.config import AgentConfig
-from src.agents.core.types import OrchestrationResult
+from src.agents.core.types import OrchestrationResult, ReflectionResult
 
 
 class FakeService:
@@ -86,17 +86,14 @@ class APITests(unittest.TestCase):
             answer="Budget answer",
             confidence=0.91,
             state_history=["execute_plan", "success"],
-            trace={
-                "final_reason": "confidence_high",
-                "steps": [
-                    {
-                        "reflection": {
-                            "applicability_note": "Applicable to SMEs in FY2025.",
-                            "uncertainty_note": "Sector-level granularity is limited.",
-                        }
-                    }
-                ],
-            },
+            final_reason="confidence_high",
+            reflection=ReflectionResult(
+                reason="ok",
+                confidence=0.91,
+                comments="ok",
+                applicability_note="Applicable to SMEs in FY2025.",
+                uncertainty_note="Sector-level granularity is limited.",
+            ),
         )
         with patch("src.api.service.Manager.run", return_value=mock_result) as run_mock:
             response = service.ask(AskRequest(query="What are FY2025 productivity measures?"))

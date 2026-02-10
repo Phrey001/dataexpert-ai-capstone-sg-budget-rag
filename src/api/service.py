@@ -66,14 +66,14 @@ class AgentAPIService:
             planner=planner,
             specialists=self._specialists,
         )
-        reflection = self._extract_final_reflection(result.trace)
+        reflection = result.reflection or {}
         return AskResponse(
             answer=result.answer,
             confidence=result.confidence,
             state_history=result.state_history,
-            final_reason=result.trace.get("final_reason"),
-            applicability_note=reflection.get("applicability_note"),
-            uncertainty_note=reflection.get("uncertainty_note"),
+            final_reason=result.final_reason,
+            applicability_note=reflection.get("applicability_note") if isinstance(reflection, dict) else reflection.applicability_note,
+            uncertainty_note=reflection.get("uncertainty_note") if isinstance(reflection, dict) else reflection.uncertainty_note,
         )
 
     def _config_with_overrides(self, payload: AskRequest) -> AgentConfig:
@@ -86,12 +86,3 @@ class AgentAPIService:
             if value is not None
         }
         return self.base_config.model_copy(update=overrides)
-
-    def _extract_final_reflection(self, trace: dict) -> dict:
-        steps = trace.get("steps", [])
-        if not steps:
-            return {}
-        reflection = steps[-1].get("reflection", {})
-        if not isinstance(reflection, dict):
-            return {}
-        return reflection

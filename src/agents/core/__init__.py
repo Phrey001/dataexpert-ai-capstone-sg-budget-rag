@@ -4,7 +4,6 @@ from .config import AgentConfig
 from .manager import Manager
 from .types import (
     ExecutionPlan,
-    ManagerState,
     OrchestrationResult,
     PlanStep,
     ReflectionResult,
@@ -19,7 +18,6 @@ __all__ = [
     "ExecutionPlan",
     "Manager",
     "ManagerAI",
-    "ManagerState",
     "OrchestrationResult",
     "PlanStep",
     "ReflectionResult",

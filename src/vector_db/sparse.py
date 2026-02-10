@@ -19,10 +19,10 @@ class BM25SparseEncoder:
     Why this exists:
     - We need sparse vectors for hybrid retrieval.
 
-    Reference: README.math.md
+    Reference: docs/vector_db/math.md
     """
-    k1: float = 1.5
-    b: float = 0.75
+    k1: float = 1.5  # standard defaults
+    b: float = 0.75  # standard defaults
     vocab: Dict[str, int] = field(default_factory=dict)
     idf: List[float] = field(default_factory=list)
     avgdl: float = 0.0
@@ -52,7 +52,7 @@ class BM25SparseEncoder:
         self.idf = [0.0] * len(self.vocab)
         for token, df in doc_freq.items():
             idx = self.vocab[token]
-            # Standard BM25 IDF term (see README.math.md).
+            # Standard BM25 IDF term (see docs/vector_db/math.md).
             self.idf[idx] = math.log(1 + (total_docs - df + 0.5) / (df + 0.5))
 
     def encode_documents(self, texts: Iterable[str]) -> List[Dict[int, float]]:
@@ -85,11 +85,12 @@ class BM25SparseEncoder:
         for idx, freq in tf.items():
             idf = self.idf[idx]
             if use_bm25:
-                # BM25 core: idf * (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * dl/avgdl))
+                # BM25 core: idf * (tf * (k1 + 1)) / denom
+                # denom = (tf + k1 * (1 - b + b * dl/avgdl))
                 denom = freq + self.k1 * (1 - self.b + self.b * (dl / self.avgdl if self.avgdl else 0))
                 score = idf * (freq * (self.k1 + 1)) / (denom if denom else 1)
             else:
-                # Query weighting: idf * tf (see README.math.md for mapping)
+                # Query weighting: idf * tf (see docs/vector_db/math.md for math notes)
                 score = idf * freq
             if score:
                 weights[idx] = float(score)

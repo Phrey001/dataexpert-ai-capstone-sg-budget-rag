@@ -5,7 +5,6 @@ from .specialists.service import MCPReadinessError, Specialists
 from .guardrails.service import GuardrailsViolationError
 from .core.types import (
     ExecutionPlan,
-    ManagerState,
     OrchestrationResult,
     PlanStep,
     ReflectionResult,
@@ -22,7 +21,6 @@ __all__ = [
     "MCPReadinessError",
     "Manager",
     "ManagerAI",
-    "ManagerState",
     "OrchestrationResult",
     "PlanStep",
     "PlannerAI",

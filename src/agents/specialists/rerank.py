@@ -6,17 +6,6 @@ from typing import Sequence
 from ..core.types import RetrievalHit
 
 
-def _cross_encoder_rerank(query: str, hits: Sequence[RetrievalHit], cross_encoder, candidate_limit: int) -> list[tuple[RetrievalHit, float]]:
-    candidates = list(hits[: max(1, candidate_limit)])
-    if not candidates:
-        return []
-    pairs = [(query, item.text) for item in candidates]
-    raw_scores = cross_encoder.predict(pairs)
-    scores = [float(score) for score in raw_scores]
-    ranked = sorted(zip(candidates, scores), key=lambda row: row[1], reverse=True)
-    return ranked
-
-
 def rerank_hits(
     query: str,
     hits: Sequence[RetrievalHit],
@@ -30,14 +19,12 @@ def rerank_hits(
 ) -> list[RetrievalHit]:
     if cross_encoder is None:
         raise RuntimeError("Cross-encoder is required for reranking and could not be loaded.")
-    ranked = _cross_encoder_rerank(
-        query=query,
-        hits=hits,
-        cross_encoder=cross_encoder,
-        candidate_limit=candidate_limit,
-    )
-    if not ranked:
+    candidates = list(hits[: max(1, candidate_limit)])
+    if not candidates:
         return []
+    pairs = [(query, item.text) for item in candidates]
+    raw_scores = [float(score) for score in cross_encoder.predict(pairs)]
+    ranked = sorted(zip(candidates, raw_scores), key=lambda row: row[1], reverse=True)
     raw_scores = [score for _, score in ranked]
     min_score = min(raw_scores)
     max_score = max(raw_scores)
@@ -49,15 +36,17 @@ def rerank_hits(
 
     current_year = int(corpus_latest_fy or datetime.now(UTC).year)
     window = max(1, int(recent_year_window))
-    recent_years = {current_year - idx for idx in range(window)}
     boost = max(0.0, min(1.0, float(rerank_recency_boost)))
 
     score_map = {}
     for item, score in ranked:
         norm = normalized.get(item.chunk_id, 0.0)
         fy = item.metadata.get("financial_year")
-        if isinstance(fy, int) and fy in recent_years:
-            norm += boost
+        if isinstance(fy, int):
+            delta = max(0, current_year - fy)
+            if delta < window:
+                tier = (window - delta) / window
+                norm *= 1.0 + (boost * tier)
         score_map[item.chunk_id] = norm
     reranked = sorted([item for item, _ in ranked], key=lambda item: score_map.get(item.chunk_id, 0.0), reverse=True)
 

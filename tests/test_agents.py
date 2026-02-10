@@ -252,8 +252,7 @@ class ManagerTests(unittest.TestCase):
             result = manager.run(UserQuery(query="test query"), planner, specialists)
         self.assertEqual(result.state_history[-1], "success")
         self.assertEqual(result.state_history.count("execute_plan"), 1)
-        reasons = [item["reason"] for item in result.trace["transitions"]]
-        self.assertIn("confidence_high", reasons)
+        self.assertEqual(result.final_reason, "confidence_high")
 
     def test_manager_very_low_confidence_returns_success_without_answer_append(self):
         config = AgentConfig()
@@ -270,12 +269,7 @@ class ManagerTests(unittest.TestCase):
 
         self.assertNotIn("replan", result.state_history)
         self.assertEqual(result.state_history[-1], "success")
-        self.assertEqual(result.trace["query_chain"][0]["revised_query"], "query-v1")
-        self.assertEqual(len(result.trace["query_chain"]), 1)
-        self.assertIn("confidence_too_low_clarify", {item["reason"] for item in result.trace["transitions"]})
-        for key in ("query_chain", "transitions", "steps", "final_state", "final_reason"):
-            self.assertIn(key, result.trace)
-        self.assertEqual(result.trace["final_reason"], "confidence_too_low_clarify")
+        self.assertEqual(result.final_reason, "confidence_too_low_clarify")
         self.assertEqual(result.answer, "Answer: limited")
 
     def test_manager_medium_confidence_returns_caveated_success(self):
@@ -292,7 +286,7 @@ class ManagerTests(unittest.TestCase):
             result = manager.run(UserQuery(query="test query"), planner, specialists)
 
         self.assertEqual(result.state_history[-1], "success")
-        self.assertEqual(result.trace["final_reason"], "confidence_medium_caveated")
+        self.assertEqual(result.final_reason, "confidence_medium_caveated")
         self.assertEqual(result.answer, "Answer: limited")
 
     def test_manager_low_confidence_partial_returns_success_with_limits(self):
@@ -309,7 +303,7 @@ class ManagerTests(unittest.TestCase):
             result = manager.run(UserQuery(query="test query"), planner, specialists)
 
         self.assertEqual(result.state_history[-1], "success")
-        self.assertEqual(result.trace["final_reason"], "confidence_low_partial")
+        self.assertEqual(result.final_reason, "confidence_low_partial")
         self.assertEqual(result.answer, "Answer: limited")
 
     def test_manager_guardrail_block_returns_safe_reply(self):
@@ -329,7 +323,7 @@ class ManagerTests(unittest.TestCase):
             result = manager.run(UserQuery(query="test query"), planner, GuardrailSpecialists())
         self.assertEqual(result.state_history[-1], "fail")
         self.assertIn("safe", result.answer.lower())
-        self.assertEqual(result.trace["guardrail_event"]["stage"], "input")
+        self.assertEqual(result.guardrail_event["stage"], "input")
 
     def test_manager_rejects_incoherent_query_without_specialist_calls(self):
         config = AgentConfig()
@@ -361,8 +355,8 @@ class ManagerTests(unittest.TestCase):
             result = manager.run(UserQuery(query="???"), planner, NoCallSpecialists())
 
         self.assertEqual(result.state_history, ["fail"])
-        self.assertEqual(result.trace["final_reason"], "incoherent_query")
-        self.assertEqual(result.trace["coherence"]["label"], "incoherent")
+        self.assertEqual(result.final_reason, "incoherent_query")
+        self.assertEqual(result.coherence["label"], "incoherent")
         self.assertIn("couldn’t interpret the query clearly", result.answer.lower())
 
 

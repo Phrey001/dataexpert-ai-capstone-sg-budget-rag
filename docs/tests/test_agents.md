@@ -4,7 +4,7 @@
 
 This test module covers:
 - config parsing/validation
-- planner revision + year-intent metadata
+- planner revision + FY selection handling
 - manager transitions and terminal fallback behavior
 - specialists hybrid retrieval (dense+sparse merge), cross-encoder rerank/fallback, and readiness behavior
 - runtime startup fail-fast path
@@ -26,8 +26,7 @@ python -m unittest -v tests.test_api
 
 ## Key Contracts Checked
 
-- trace top-level keys remain stable:
-  - `query_chain`, `transitions`, `steps`, `final_state`, `final_reason`
+- no custom trace payloads (LangSmith spans only)
 - planner fails fast on invalid revised query
 - manager deterministic single-pass synthesis/reflection and confidence-band terminal semantics (high/caveated/partial/clarify)
 - coherent low-confidence outputs still return synthesis answer; applicability/uncertainty are surfaced via reflection metadata

@@ -21,23 +21,10 @@ Rules:
 - guardrail block returns safe reply and keeps terminal `fail`.
 - planner incoherent queries still terminal `fail`.
 
-## Trace Contract
+## Tracing
 
-`OrchestrationResult.trace` keeps stable top-level keys:
-- `plan`
-- `transitions`
-- `steps`
-- `query_chain`
-- `final_state`
-- `final_reason`
-- optional `guardrail_event`
-
-Transition payload keys:
-- `cycle`, `to`, `reason`
-
-Step payload keys:
-- `cycle`, `state`, `original_query`, `revised_query`, `retrieved`, `answer_preview`, `reflection`
-- optional `retrieve_params`
+- LangSmith tracing remains available via the `@traceable` spans.
+- There is no custom trace payload in `OrchestrationResult`.
 
 ## Planner Contract
 
@@ -58,9 +45,8 @@ Manager early reject rule:
 - no specialist retrieval/rerank/synthesis/reflect calls are executed for that query.
 
 Retrieve step metadata includes:
-- `year_mode` (`explicit|recent|range|none`)
+- `year_mode` (`explicit|none`)
 - `requested_years`
-- `allow_broad_horizon`
 - `recent_year_window`
 
 Retrieval/rerank behavior:
@@ -79,5 +65,4 @@ Scoring details:
 
 Guardrail violations raise `GuardrailsViolationError(stage, reason, safe_reply)`.
 Manager converts this into terminal failure with:
-- `trace["guardrail_event"] = {"stage": ..., "reason": ...}`
 - final safe reply answer.
