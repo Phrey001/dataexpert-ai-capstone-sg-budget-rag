@@ -1,3 +1,5 @@
+"""CLI entrypoint for quick local debugging without the API/UI."""
+
 import argparse
 from typing import Optional, Sequence
 

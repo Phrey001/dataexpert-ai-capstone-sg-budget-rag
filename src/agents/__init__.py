@@ -1,3 +1,5 @@
+"""Public re-exports for convenient imports; __all__ defines the intended API."""
+
 from .core.config import AgentConfig
 from .core.manager import Manager
 from .planner.service import PlannerAI

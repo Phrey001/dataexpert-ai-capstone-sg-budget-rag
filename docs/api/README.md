@@ -31,12 +31,9 @@ Frontend uses same-origin by default in `frontend/app.js`.
 For production split deploy, point `API_BASE_URL` to your hosted backend URL (for example, frontend on Vercel and backend on Render/Railway/Fly).
 The UI also shows a static scope disclaimer describing document boundaries (FY2016-FY2025 budget statements + round-up speeches only).
 
-## Guardrails Validators (Required for strict mode)
+## Guardrails Validators (Required by default)
 
-Why this is needed:
-- strict readiness checks require installed Guardrails validator packages
-- without them, startup can fail with errors like:
-  - `No supported Guardrails validator found`
+Guardrails are enabled by default. You must install the hub validator packages for strict startup.
 
 Install validators:
 

@@ -1,5 +1,7 @@
 # Runtime Runbook
 
+This CLI entrypoint is intended for quick local debugging of the RAG pipeline without starting the API/UI.
+
 CLI entrypoint:
 
 ```bash

@@ -10,10 +10,15 @@ OUT_DIR=${OUT_DIR:-"logs/integration"}
 mkdir -p "$OUT_DIR"
 
 queries=(
+  # Normal success: direct, in-scope query
   "What are FY2025 productivity measures?"
-  "I am a policy researcher. Show productivity-support trends since FY2020 and compare how measure design has shifted over time."
-  "Why increase GST???"
-  "How are middle income families being supported?"
+  # Caveated/partial: cross-year comparison with likely gaps
+  "How did healthcare priorities change before vs after COVID?"
+  # Clarify/incoherent: low-signal input
+  "blorb flarq 2025 ???"
+  # Persona/emotional tone: stress tone handling
+  "I am an unhappy citizen and I feel FY2025 benefits are unfair. Explain which productivity-related measures target ordinary workers versus businesses."
+  # Scenario-specific eligibility: tests evidence limits
   "Someone earning 80k, no home ownership, staying in hdb (parents owned) - How much cash payout received over the years"
 )
 

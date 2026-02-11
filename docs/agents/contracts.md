@@ -9,6 +9,7 @@ States:
 
 Rules:
 - manager executes a single deterministic pass (retrieve → rerank → synthesize → reflect).
+- Manager states and plan steps are kept as separate concepts to allow potential experiments with alternative state flows or plan configurations, while the current control flow is the default.
 - confidence bands determine terminal behavior for coherent queries:
   - `>= 0.80` -> success (`confidence_high`)
   - `0.70 - 0.80` -> success with caveat (`confidence_medium_caveated`)

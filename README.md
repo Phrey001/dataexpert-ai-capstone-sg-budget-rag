@@ -5,11 +5,12 @@
 ## Start Here (Developer + Operator Guide)
 
 1. [`docs/agents/README.md`](docs/agents/README.md) - module map, call flow, and where to edit.
-2. [`docs/agents/runtime.md`](docs/agents/runtime.md) - CLI runbook, env vars, and failure modes.
+2. [`docs/agents/runtime.md`](docs/agents/runtime.md) - CLI runbook for quick local debugging without the API/UI, plus env vars and failure modes.
 3. [`docs/agents/contracts.md`](docs/agents/contracts.md) - manager state machine and trace contracts.
-4. [`docs/tests/README.md`](docs/tests/README.md) - tests overview (unit + integration).
-5. [`docs/load_data.md`](docs/load_data.md) - vector DB ingestion/runbook for `src/vector_db/load_data.py`.
-6. Continue below in this `README.md` for quickstart and environment setup.
+4. [`docs/dev_review.md`](docs/dev_review.md) - developer-friendly top‑down review path.
+5. [`docs/tests/README.md`](docs/tests/README.md) - tests overview (unit + integration).
+6. [`docs/load_data.md`](docs/load_data.md) - vector DB ingestion/runbook for `src/vector_db/load_data.py`.
+7. Continue below in this `README.md` for quickstart and environment setup.
    Defaults for runtime knobs live in `src/agents/core/config.py`.
 
 ## Quickstart
@@ -46,19 +47,6 @@ API `/ask` also includes default-on prompt-injection screening (details in [`doc
 
 More details: [`docs/api/README.md`](docs/api/README.md)
 
-## Docker / Cloud Run (Backend)
-
-Local build/run:
-
-```bash
-docker build -t sg-budget-rag-backend .
-docker run --rm -p 8080:8080 sg-budget-rag-backend
-```
-
-Cloud Run note:
-- Use this Dockerfile for backend deployment.
-- Frontend can be deployed separately (e.g., Vercel).
-
 ## Capstone Write-Up
 
 ### System/AI Agent diagram
@@ -85,4 +73,4 @@ Cloud Run note:
 ## Deployment
 
 - Live app: [ADD_DEPLOYED_URL_HERE]
-- Deployment plan: [`docs/deployment.md`](docs/deployment.md)
+- Deployment plan: [`README.deployment.md`](README.deployment.md)

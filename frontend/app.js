@@ -1,4 +1,4 @@
-const API_BASE_URL = window.AGENT_API_BASE_URL || window.location.origin;
+const API_BASE_URL = window.location.origin;
 
 const form = document.getElementById("ask-form");
 const queryInput = document.getElementById("query");

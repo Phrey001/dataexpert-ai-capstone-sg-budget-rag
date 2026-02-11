@@ -21,30 +21,26 @@ class Manager:
         plan = planner.build_plan(user_query)
         if plan.coherence == "incoherent":
             return self._build_incoherent_reject(plan)
-        state = "execute_plan"
-        state_history = [state]
+        state_history = ["execute_plan"]
         revised_query = plan.revised_query
         latest_answer = ""
         latest_confidence = 0.0
         latest_reflection = ReflectionResult(reason="low_coverage", confidence=0.0, comments="not_started")
         original_query = plan.original_query
         try:
-            if state == "execute_plan":
-                retrieve_params = next((dict(step.params) for step in plan.steps if step.name == "retrieve"), {})
-                hits = specialists.retrieve(revised_query, plan.top_k, retrieve_context=retrieve_params)
-                reranked_hits = specialists.rerank(revised_query, hits, plan.top_n)
-                latest_answer = specialists.synthesize(
-                    original_query=original_query,
-                    revised_query=revised_query,
-                    hits=reranked_hits,
-                )
-                latest_reflection = specialists.reflect(original_query, revised_query, latest_answer, reranked_hits)
-                latest_confidence = latest_reflection.confidence
-                transition_reason = self._transition_reason(latest_reflection)
-                state = "success"
-            else:
-                state = "fail"
-                transition_reason = "unknown_state"
+            # Plan steps are retained as a potential extension point; current execution is a fixed pipeline.
+            retrieve_params = next((dict(step.params) for step in plan.steps if step.name == "retrieve"), {})
+            hits = specialists.retrieve(revised_query, plan.top_k, retrieve_context=retrieve_params)
+            reranked_hits = specialists.rerank(revised_query, hits, plan.top_n)
+            latest_answer = specialists.synthesize(
+                original_query=original_query,
+                revised_query=revised_query,
+                hits=reranked_hits,
+            )
+            latest_reflection = specialists.reflect(original_query, revised_query, latest_answer, reranked_hits)
+            latest_confidence = latest_reflection.confidence
+            transition_reason = self._transition_reason(latest_reflection)
+            state = "success"
         except GuardrailsViolationError as exc:
             latest_answer = exc.safe_reply
             latest_confidence = 0.0

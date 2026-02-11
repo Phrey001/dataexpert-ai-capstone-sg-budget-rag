@@ -43,6 +43,7 @@ class PlannerAI:
             "recent_year_window": self.config.recent_year_window,
         }
         shared_query_params = {"original_query": original_query, "revised_query": revised_query}
+        # Steps are kept as a potential extension point and trace-friendly plan contract.
         steps: List[PlanStep] = [
             PlanStep(name="retrieve", params=retrieve_params),
             PlanStep(name="rerank", params=shared_query_params),
