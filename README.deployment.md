@@ -1,12 +1,11 @@
-# Deployment Plan (Cloud Run + Vercel)
+# Deployment Plan (Cloud Run)
 
-This is a simple, low‑ops deployment flow. Use Cloud Run for the backend API and Vercel for the frontend.
+This is a simple, low‑ops deployment flow. Use Cloud Run to serve both the API and the UI from a single container.
 
 ## Prerequisites / sign‑ups
 
 - **Google Cloud (Cloud Run)**: requires a GCP account and a billing‑enabled project *(even for free-tier deployment with limited trial period and credits).*
 - **Artifact Registry (GCP)**: needed to deploy a prebuilt image to Cloud Run with `--image`.
-- **Vercel**: sign in with GitHub or email (free tier is fine).
 - **Docker**: required to pull/run the prebuilt backend image locally *(optional to build image locally which needs `GUARDRAILS_API_KEY`).*
 - **GHCR**: Recommended to pull prebuilt images from GitHub Container Registry *(optional to build image locally and publish to your own GHCR).*
 - **Milvus (Zilliz Cloud)**: `MILVUS_URI` + `MILVUS_TOKEN` (Vector DB).  

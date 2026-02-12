@@ -17,6 +17,11 @@ def rerank_hits(
     corpus_latest_fy: int = 2025,
     rerank_recency_boost: float = 0.05,
 ) -> list[RetrievalHit]:
+    """Rerank retrieval hits with a cross-encoder and optional recency boost.
+
+    Defaults are fallbacks; production values are passed in from AgentConfig
+    (defined in src/agents/core/config.py).
+    """
     if cross_encoder is None:
         raise RuntimeError("Cross-encoder is required for reranking and could not be loaded.")
     candidates = list(hits[: max(1, candidate_limit)])

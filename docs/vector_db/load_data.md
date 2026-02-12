@@ -1,5 +1,21 @@
 # Load Data Pipeline
 
+## Data quality checks (per source)
+
+These are lightweight, fail-fast checks applied during ingestion. Each source must pass at least two checks:
+
+### `budget_statements`
+- **Filename FY token:** `fyYYYY` must be present in the filename (extracts `financial_year`).
+- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
+
+### `round_up_speech`
+- **Directory convention:** file must sit under `data/round_up_speech/...` to infer `doc_type`.
+- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
+
+### `annex`
+- **Filename FY token:** `fyYYYY` must be present in the filename (extracts `financial_year`).
+- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
+
 ## Purpose and scope
 
 `src/vector_db/load_data.py` ingests local budget-related PDFs from the repository `data/` directory into a Milvus collection for hybrid retrieval.
@@ -13,37 +29,6 @@ This pipeline:
 
 These PDFs are a manually curated, canonical set of Singapore budget documents
 used for reproducible ingestion and evaluation. Source URLs are not readily and reliably scriptable.
-
-## Directory conventions
-
-The loader expects files under this pattern:
-
-`data/<doc_type>/.../*.pdf`
-
-Examples:
-- `data/budgets_statements/fy2024_budget_statement.pdf`
-- `data/round_up_speech/fy2020/2_fy2020_supplementary_budget_debate_round_up_speech.pdf`
-
-## Metadata rules
-
-### `doc_type`
-
-`doc_type` is derived from the first subfolder under `data/`.
-
-Example:
-- `data/budgets_statements/...` -> `doc_type = "budgets_statements"`
-- `data/round_up_speech/...` -> `doc_type = "round_up_speech"`
-
-### `financial_year`
-
-`financial_year` is derived from filename only using regex:
-
-`fy(\d{4})`
-
-Example:
-- `fy2025_budget_statement.pdf` -> `financial_year = 2025`
-
-If `fyYYYY` is missing in filename, the run fails immediately.
 
 ## Chunking strategy
 
@@ -74,52 +59,6 @@ Expected dense vector dimension is `768`.
 Sparse vectors are generated with the project-local `BM25SparseEncoder`:
 - source: `src/vector_db/sparse.py`
 - output format: `Dict[int, float]` compatible with Milvus sparse vector field
-
-## Milvus schema
-
-The collection stores:
-- `chunk_id` (`VARCHAR`, primary key)
-- `doc_id` (`VARCHAR`)
-- `source_path` (`VARCHAR`)
-- `doc_type` (`VARCHAR`)
-- `financial_year` (`INT64`)
-- `chunk_start` (`INT64`)
-- `chunk_end` (`INT64`)
-- `text` (`VARCHAR`)
-- `dense_vector` (`FLOAT_VECTOR`, dim from embedding model)
-- `sparse_vector` (`SPARSE_FLOAT_VECTOR`)
-
-Indexes:
-- dense: `HNSW` with `IP`
-- sparse: `SPARSE_INVERTED_INDEX` with `IP`
-
-## Failure policy
-
-The loader is fail-fast:
-- missing required env vars -> fail
-- invalid `data_root` -> fail
-- no PDFs found -> fail
-- missing `doc_type` path segment -> fail
-- missing `fyYYYY` in filename -> fail
-- unreadable/empty PDF text -> fail
-- vector count mismatch -> fail
-- existing collection dense dimension mismatch -> fail
-
-## Data quality checks (per source)
-
-These are lightweight, fail-fast checks applied during ingestion. Each source must pass at least two checks:
-
-### `budget_statements`
-- **Filename FY token:** `fyYYYY` must be present in the filename (extracts `financial_year`).
-- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
-
-### `round_up_speech`
-- **Directory convention:** file must sit under `data/round_up_speech/...` to infer `doc_type`.
-- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
-
-### `annex`
-- **Filename FY token:** `fyYYYY` must be present in the filename (extracts `financial_year`).
-- **Extracted text non-empty:** PDF text must be readable (empty text fails fast).
 
 ## Usage
 
@@ -159,7 +98,72 @@ Expected consol outputs on runtime include:
 - dense embedding dimension
 - number of inserted chunks
 
-## Known limitations for implementation approach
+
+--- 
+## Appendix
+
+### Directory conventions
+
+The loader expects files under this pattern:
+
+`data/<doc_type>/.../*.pdf`
+
+Examples:
+- `data/budgets_statements/fy2024_budget_statement.pdf`
+- `data/round_up_speech/fy2020/2_fy2020_supplementary_budget_debate_round_up_speech.pdf`
+
+### Metadata rules
+
+#### `doc_type`
+
+`doc_type` is derived from the first subfolder under `data/`.
+
+Example:
+- `data/budgets_statements/...` -> `doc_type = "budgets_statements"`
+- `data/round_up_speech/...` -> `doc_type = "round_up_speech"`
+
+#### `financial_year`
+
+`financial_year` is derived from filename only using regex:
+
+`fy(\d{4})`
+
+Example:
+- `fy2025_budget_statement.pdf` -> `financial_year = 2025`
+
+If `fyYYYY` is missing in filename, the run fails immediately.
+
+### Milvus schema
+
+The collection stores:
+- `chunk_id` (`VARCHAR`, primary key)
+- `doc_id` (`VARCHAR`)
+- `source_path` (`VARCHAR`)
+- `doc_type` (`VARCHAR`)
+- `financial_year` (`INT64`)
+- `chunk_start` (`INT64`)
+- `chunk_end` (`INT64`)
+- `text` (`VARCHAR`)
+- `dense_vector` (`FLOAT_VECTOR`, dim from embedding model)
+- `sparse_vector` (`SPARSE_FLOAT_VECTOR`)
+
+Indexes:
+- dense: `HNSW` with `IP`
+- sparse: `SPARSE_INVERTED_INDEX` with `IP`
+
+### Failure policy
+
+The loader is fail-fast:
+- missing required env vars -> fail
+- invalid `data_root` -> fail
+- no PDFs found -> fail
+- missing `doc_type` path segment -> fail
+- missing `fyYYYY` in filename -> fail
+- unreadable/empty PDF text -> fail
+- vector count mismatch -> fail
+- existing collection dense dimension mismatch -> fail
+
+### Known limitations for implementation approach
 
 - No OCR fallback for scanned PDFs.
 - Metadata field `financial_year` is inferred from filenames only.

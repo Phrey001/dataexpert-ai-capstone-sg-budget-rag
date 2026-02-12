@@ -21,7 +21,7 @@
 ## Where to Edit
 
 - State transitions/fallbacks: `src/agents/core/manager.py`
-- Runtime/env tunables are centralized in `src/agents/core/config.py`; confidence-band thresholds are env-backed in the same config.
+- Runtime/env tunables are centralized in `src/agents/core/config.py` (`AgentConfig`); confidence-band thresholds are env-backed in the same config.
 - Synthesis/reflection model + temperature knobs are in `src/agents/core/config.py` (internal dev/ops tuning, not user API toggles).
 - Planner query revision or year intent: `src/agents/planner/service.py`
 - Retrieval filters/rerank behavior: `src/agents/specialists/retrieval.py`, `src/agents/specialists/rerank.py`

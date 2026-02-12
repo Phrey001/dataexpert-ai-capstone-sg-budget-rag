@@ -33,16 +33,16 @@ class ConfigTests(unittest.TestCase):
                 os.environ["LANGCHAIN_TRACING_V2"] = original
 
     def test_invalid_threshold_raises_validation_error(self):
-        original = os.environ.get("AGENT_CONFIDENCE_THRESHOLD")
+        original = os.environ.get("AGENT_CONFIDENCE_STRONG")
         try:
-            os.environ["AGENT_CONFIDENCE_THRESHOLD"] = "1.5"
+            os.environ["AGENT_CONFIDENCE_STRONG"] = "1.5"
             with self.assertRaises(ValidationError):
                 AgentConfig.from_env()
         finally:
             if original is None:
-                os.environ.pop("AGENT_CONFIDENCE_THRESHOLD", None)
+                os.environ.pop("AGENT_CONFIDENCE_STRONG", None)
             else:
-                os.environ["AGENT_CONFIDENCE_THRESHOLD"] = original
+                os.environ["AGENT_CONFIDENCE_STRONG"] = original
 
     def test_planner_env_overrides(self):
         original_model = os.environ.get("AGENT_PLANNER_MODEL")
@@ -208,8 +208,6 @@ class StyleLoopSpecialists:
         return "Unstructured answer"
 
     def reflect(self, original_query, revised_query, answer, hits):
-        if "Evidence:" not in answer:
-            return ReflectionResult(reason="low_coverage", confidence=0.6, comments="Add evidence bullets")
         return ReflectionResult(reason="ok", confidence=0.9, comments="Looks good")
 
 

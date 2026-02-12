@@ -1,8 +1,6 @@
 # API + Frontend Runbook
 
-This project uses a split deployment model:
-- Frontend (static) can be hosted on Vercel.
-- Backend (FastAPI + agent stack) should run on a Python host (Render/Railway/Fly/local VM).
+This project uses a single Cloud Run service to host both the API and the frontend UI.
 
 ## Local Run
 
@@ -28,7 +26,7 @@ Note: final answer text (with evidence citations) comes from synthesis. Applicab
 ## Frontend Backend URL
 
 Frontend uses same-origin by default in `frontend/app.js`.
-For production split deploy, point `API_BASE_URL` to your hosted backend URL (for example, frontend on Vercel and backend on Render/Railway/Fly).
+For production, point `API_BASE_URL` to your hosted backend URL (for example, Cloud Run).
 The UI also shows a static scope disclaimer describing document boundaries (FY2016-FY2025 budget statements + round-up speeches only).
 
 ## Guardrails Validators (Required by default)

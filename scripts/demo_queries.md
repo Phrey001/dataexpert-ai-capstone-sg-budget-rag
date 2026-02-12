@@ -9,6 +9,10 @@ Note: the integration smoke test uses a smaller, behavior‑targeted subset.
 
 - `What are FY2025 productivity measures?`
 
+## Healthcare Policies pre and post Covid
+
+- `How did healthcare priorities change before vs after COVID?`
+
 ## Policy Comparison
 
 - `I am a policy analyst preparing a decision memo. Compare FY2025 productivity-related measures across key sectors and ministries, explain implementation mechanisms and trade-offs, and conclude which measures are likely to deliver the strongest medium-term productivity impact based on available budget evidence.`
