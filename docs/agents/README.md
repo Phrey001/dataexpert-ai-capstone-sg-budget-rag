@@ -1,31 +1,28 @@
 # Agents Module Map
 
-`src/agents` is organized by responsibility:
+## Purpose
+`src/agents` is the RAG orchestration layer: planner → retrieval/rerank → synthesis → reflection, with guardrails and MCP seams.
 
+## Key modules
 - `runtime.py` - CLI entrypoint and startup wiring.
-- `core/` - shared config, datatypes, manager state machine.
-- `planner/` - planner service.
-- `specialists/` - specialist facade plus retrieval/rerank/synthesis/reflection helpers.
-- `guardrails/` - GuardrailsAI policy wrapper and violation mapping.
+- `core/` - config + datatypes + manager state machine.
+- `planner/` - query rewrite + coherence check.
+- `specialists/` - retrieval, rerank, synthesis, reflection.
+- `guardrails/` - GuardrailsAI policy wrapper.
 - `mcp/` - MCP tool naming/contracts/client seam.
 - `prompts/` - prompt templates used by planner/synthesis/reflection.
 
-## Call Flow
+## Call flow (happy path)
+`runtime.py` → `Manager.run(...)` → `PlannerAI.build_plan(...)` → `Specialists` (retrieve → rerank → synthesize → reflect)
 
-1. `runtime.py` builds `AgentConfig`, `PlannerAI`, `Manager`, `Specialists`.
-2. `Manager.run(...)` drives state transitions.
-3. `PlannerAI.build_plan(...)` returns revised query + plan steps.
-4. `Specialists` executes retrieve/rerank/synthesize/reflect.
-5. Guardrails and readiness failures surface as terminal manager outcomes.
+## Where to edit (most common)
+- Manager transitions/fallbacks: `src/agents/core/manager.py`
+- Config defaults + env knobs: `src/agents/core/config.py`
+- Planner behavior: `src/agents/planner/service.py`
+- Retrieval/rerank: `src/agents/specialists/retrieval.py`, `src/agents/specialists/rerank.py`
+- Synthesis/reflection prompts: `src/agents/prompts/`, `src/agents/specialists/synthesis.py`, `src/agents/specialists/reflection.py`
+- Guardrail policy: `src/agents/guardrails/service.py`
 
-## Where to Edit
-
-- State transitions/fallbacks: `src/agents/core/manager.py`
-- Runtime/env tunables are centralized in `src/agents/core/config.py` (`AgentConfig`); confidence-band thresholds are env-backed in the same config.
-- Synthesis/reflection model + temperature knobs are in `src/agents/core/config.py` (internal dev/ops tuning, not user API toggles).
-- Planner query revision or year intent: `src/agents/planner/service.py`
-- Retrieval filters/rerank behavior: `src/agents/specialists/retrieval.py`, `src/agents/specialists/rerank.py`
-- Synthesis/reflection prompting: `src/agents/prompts/`, `src/agents/specialists/synthesis.py`, `src/agents/specialists/reflection.py`
-- Guardrail policy behavior: `src/agents/guardrails/service.py`
-- Sample/demo queries: `docs/agents/sample_queries.md`
-- Data ingestion runbook: `docs/load_data.md`
+## Related docs
+- Demo queries: `scripts/demo_queries.md`
+- Data ingestion: `docs/vector_db/load_data.md`

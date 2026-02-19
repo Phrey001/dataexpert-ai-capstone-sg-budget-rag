@@ -29,7 +29,7 @@ Use this as a developer-friendly top‑down path for understanding and reviewing
 - Prompt-injection guard: `src/api/security.py`
 
 ## 5) Data & scoring references
-- Ingestion: `docs/load_data.md`
+- Ingestion: `docs/vector_db/load_data.md`
 - Scoring details: `docs/agents/scoring.md`
 - Sparse/BM25 math: `docs/vector_db/math.md`
 

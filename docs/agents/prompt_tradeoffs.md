@@ -1,19 +1,8 @@
-# Prompt Tradeoffs (Executive Summary)
+# Prompt Tradeoffs
 
-Our prompts are designed to produce **evidence‑grounded, policy‑relevant answers** with
-clear limits and citations. This improves reliability and auditability, at the cost of
-shorter, more conservative responses.
+Goal: evidence‑grounded, policy‑relevant answers with clear limits and citations.
+Tradeoff: higher reliability and auditability, less narrative depth.
 
-**Synthesis (answer writer)**  
-Prioritizes evidence, forces a direct policy implication and a bottom‑line sentence,
-and avoids irrelevant examples. This keeps answers on‑scope and actionable, but reduces
-nuance and narrative depth. It also requires multiple citations when evidence exists.
-
-**Reflection (reviewer)**  
-Produces structured applicability/uncertainty notes for the UI and treats confidence as
-diagnostic rather than a refusal trigger. This keeps outputs usable but can allow weaker
-answers to show. Coherence is LLM‑judged, so odd queries may still pass.
-
-**Planner (query rewriter)**  
-Uses a single LLM call to revise the query and judge coherence. This is fast and simple,
-but relies on prompt strictness to avoid intent drift.
+- **Synthesis (answer writer):** forces evidence, a policy implication, and a bottom‑line sentence; may reduce nuance.
+- **Reflection (reviewer):** produces applicability/uncertainty notes; confidence is diagnostic, so weaker answers can still surface.
+- **Planner (query rewriter):** single LLM call to revise query + judge coherence; fast, but relies on prompt strictness to avoid drift.
