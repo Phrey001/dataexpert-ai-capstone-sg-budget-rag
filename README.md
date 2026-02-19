@@ -70,23 +70,38 @@ May contain duplicate references with above.
 > **Reference:** `docs/system_architecture.pptx`
 >
 > Capstone is implemented end-to-end with an use case using real world datasets
->
-> Below Selective Extracts Only; Refer full .pptx for more discussions on key RAG algorithms
 
-#### Business problem (Objectives)
+#### Scope & Non-Goals + System Architecture Diagrams + Key Algorithm Discussions
+
+<details>
+<summary>Show Scope & Non-Goals</summary>
+
 ![alt text](docs/system_architecture-1.png)
+</details>
 
-#### System/AI Agent design diagram
+<details>
+<summary>Show System Architecture Diagrams</summary>
 
 ![alt text](docs/system_architecture-2.png)
 ![alt text](docs/system_architecture-3.png)
+</details>
+
+<details>
+<summary>Show Key Algorithms Discussions</summary>
+
+![alt text](docs/system_architecture-4.png)
+![alt text](docs/system_architecture-5.png)
+</details>
 
 #### UI + example queries screenshots
-- `screenshots/`
+> **Reference:** `screenshots/`
+
+<details>
+<summary>Show UX Screenshots</summary>
 
 ![alt text](screenshots/landing_page_with_scope_notes.jpg)
 ![alt text](screenshots/healthcare_policies_pre_and_post_covid.jpg)
-
+</details>
 
 ### Write Up
 ---
@@ -104,7 +119,7 @@ May contain duplicate references with above.
 
 | Tech choices | Justification
 |---|---|
-| Key RAG algorithms | Refer full `system_architecture.pptx` for more discussions |
+| Key RAG algorithms | Included in above under `system_architecture` > **Key Algorithm Discussions** |
 | Milvus DB + Zilliz Cloud | Open-source Vector DB, while managed Milvus (Zilliz Cloud) has free tier available |
 | FastAPI | Modern, high-performance Python web framework that simplifies the creation of web APIs |
 | Google Cloud Run | Fully managed application platform which we use for full-stack deployment which is good for AI Engineering packages which can be heavy. |
@@ -131,7 +146,7 @@ May contain duplicate references with above.
 
 
 #### Potential Future enhancements
-> Included in above slide under `system_architecture` > **Scope & Non-goals**.
+> Included in above under `system_architecture` > **Scope & Non-goals**.
 >
 > *Potential extensions could incorporate structured extraction (e.g. to build Financials datasets), more focus on reasoning and analysis (numerical, narrative) covering policy and financial, but are intentionally excluded here to isolate and evaluate RAG-LLM grounding and agentic control behaviours.*
 
