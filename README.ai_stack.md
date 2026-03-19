@@ -26,7 +26,6 @@
 
 - The manager/orchestration layer is intentionally custom and deterministic to keep runtime behavior and control flow predictable.
 - In this repo, "MCP-inspired" means the code separates tool names, contracts, and client calls into a dedicated `src/agents/mcp/` module. It does not mean the repo is running a full external MCP client/server integration.
-- For illustrative comparisons, see [`examples/langchain/illustrative_pipeline.py`](examples/langchain/illustrative_pipeline.py) and [`examples/langchain/illustrative_pipeline_with_mcp_seam.py`](examples/langchain/illustrative_pipeline_with_mcp_seam.py). These examples are not used by the app runtime.
 
 ## Example Comparison
 
@@ -39,3 +38,29 @@
 - Cons: adds indirection quickly, and for this repo may recreate some of the extra structure that already makes the main implementation harder to scan.
 
 For this repo's current scope, `illustrative_pipeline.py` is the better readability baseline.
+
+## Current vs Alternative Orchestration
+
+Current repo architecture:
+
+- `src/api/service.py` calls the planner/manager/specialists stack indirectly.
+- `src/agents/core/manager.py` is the main coordinator for the fixed pipeline.
+- `src/agents/specialists/service.py` acts as a facade over retrieval, rerank, synthesis, and reflection.
+- This structure favors subsystem boundaries and a separate orchestration layer over a flatter request path.
+
+More canonical LangChain-style alternative:
+
+- one explicit pipeline entrypoint would coordinate the planner, retrieval, rerank, synthesis, and reflection flow more directly
+- LangChain would still mainly be used through `ChatOpenAI`, but the top-level execution path would be flatter and easier to trace
+- MCP-inspired seams could still exist around tool naming or retrieval client boundaries
+- Illustrative comparisons: [`examples/langchain/illustrative_pipeline.py`](examples/langchain/illustrative_pipeline.py) and [`examples/langchain/illustrative_pipeline_with_mcp_seam.py`](examples/langchain/illustrative_pipeline_with_mcp_seam.py). These examples are not used by the app runtime.
+
+This would be an architecture change, not just a readability cleanup. The current repo keeps more custom layering and indirection; the alternative would simplify the main flow but also change the orchestration boundary.
+
+## Why the Current Architecture Exists
+
+- The current structure keeps subsystem boundaries explicit across API wiring, orchestration, and specialist implementations.
+- The layering leaves room for future orchestration changes without forcing retrieval, rerank, synthesis, and reflection logic into one large module.
+- It also provides a more natural place for state-aware flows, such as retries, replanning, or additional review/reflection passes if the system grows beyond the current fixed pipeline.
+
+During development, other orchestration ideas were explored, including less deterministic flows such as extra reflection or review-style passes before finalizing an answer. The current architecture reflects the decision to settle on a simpler fixed pipeline after those experiments.
