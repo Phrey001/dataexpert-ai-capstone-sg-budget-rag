@@ -21,15 +21,18 @@ class Manager:
         plan = planner.build_plan(user_query)
         if plan.coherence == "incoherent":
             return self._build_incoherent_reject(plan)
+
         state_history = ["execute_plan"]
         revised_query = plan.revised_query
         latest_answer = ""
         latest_confidence = 0.0
         latest_reflection = ReflectionResult(reason="low_coverage", confidence=0.0, comments="not_started")
         original_query = plan.original_query
+        guardrail_event = None
+
         try:
             # Plan steps are retained as a potential extension point; current execution is a fixed pipeline.
-            retrieve_params = next((dict(step.params) for step in plan.steps if step.name == "retrieve"), {})
+            retrieve_params = self._retrieve_params(plan)
             hits = specialists.retrieve(revised_query, plan.top_k, retrieve_context=retrieve_params)
             reranked_hits = specialists.rerank(revised_query, hits, plan.top_n)
             latest_answer = specialists.synthesize(
@@ -48,8 +51,7 @@ class Manager:
             state = "fail"
             transition_reason = "guardrail_block"
             guardrail_event = {"stage": exc.stage, "reason": exc.reason}
-        else:
-            guardrail_event = None
+
         state_history.append(state)
 
         final_reason = transition_reason
@@ -64,6 +66,9 @@ class Manager:
             reflection=latest_reflection,
             guardrail_event=guardrail_event,
         )
+
+    def _retrieve_params(self, plan) -> Dict:
+        return next((dict(step.params) for step in plan.steps if step.name == "retrieve"), {})
 
     def _build_incoherent_reject(self, plan) -> OrchestrationResult:
         answer = (

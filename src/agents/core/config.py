@@ -1,24 +1,7 @@
 """Environment-backed configuration for agent orchestration."""
 
-import os
-
-from pydantic import BaseModel, Field, field_validator
-
-try:
-    from pydantic_settings import BaseSettings, SettingsConfigDict
-except ImportError:
-    class SettingsConfigDict(dict):
-        pass
-
-    class BaseSettings(BaseModel):
-        def __init__(self, **data):
-            env_data = {}
-            for field_name, field_info in self.__class__.model_fields.items():
-                alias = field_info.alias or field_name
-                if alias in os.environ:
-                    env_data[field_name] = os.environ[alias]
-            env_data.update(data)
-            super().__init__(**env_data)
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AgentConfig(BaseSettings):

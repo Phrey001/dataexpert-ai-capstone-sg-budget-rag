@@ -45,6 +45,10 @@ Optional:
 
 For API + frontend run instructions and endpoints, see [`docs/api/README.md`](docs/api/README.md).
 
+## AI Stack Notes
+
+For notes on the AI libraries, tools, and why they are used in this repo, see [`README.ai_stack.md`](README.ai_stack.md).
+
 
 ---
 ## Capstone Rubrics Review

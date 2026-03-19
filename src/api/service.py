@@ -57,23 +57,22 @@ class AgentAPIService:
         config = self._config_with_overrides(payload)
         planner = PlannerAI(config)
         manager = Manager(config)
-        context = {}
-        if payload.requested_years:
-            context["requested_years"] = payload.requested_years
-        user_query = UserQuery(query=payload.query, context=context or None)
+        user_query = UserQuery(
+            query=payload.query,
+            context=self._build_query_context(payload),
+        )
         result = manager.run(
             user_query=user_query,
             planner=planner,
             specialists=self._specialists,
         )
-        reflection = result.reflection or {}
         return AskResponse(
             answer=result.answer,
             confidence=result.confidence,
             state_history=result.state_history,
             final_reason=result.final_reason,
-            applicability_note=reflection.get("applicability_note") if isinstance(reflection, dict) else reflection.applicability_note,
-            uncertainty_note=reflection.get("uncertainty_note") if isinstance(reflection, dict) else reflection.uncertainty_note,
+            applicability_note=self._reflection_field(result.reflection, "applicability_note"),
+            uncertainty_note=self._reflection_field(result.reflection, "uncertainty_note"),
         )
 
     def _config_with_overrides(self, payload: AskRequest) -> AgentConfig:
@@ -86,3 +85,15 @@ class AgentAPIService:
             if value is not None
         }
         return self.base_config.model_copy(update=overrides)
+
+    def _build_query_context(self, payload: AskRequest) -> dict | None:
+        if not payload.requested_years:
+            return None
+        return {"requested_years": payload.requested_years}
+
+    def _reflection_field(self, reflection, field_name: str) -> str | None:
+        if reflection is None:
+            return None
+        if isinstance(reflection, dict):
+            return reflection.get(field_name)
+        return getattr(reflection, field_name, None)

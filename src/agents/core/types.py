@@ -58,9 +58,6 @@ class RetrieveContextPayload(TypedDict, total=False):
     requested_years: list[int]
     recent_year_window: int
 
-
-
-
 @dataclass
 class OrchestrationResult:
     answer: str
