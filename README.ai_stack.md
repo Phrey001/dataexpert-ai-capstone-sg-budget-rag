@@ -26,4 +26,16 @@
 
 - The manager/orchestration layer is intentionally custom and deterministic to keep runtime behavior and control flow predictable.
 - In this repo, "MCP-inspired" means the code separates tool names, contracts, and client calls into a dedicated `src/agents/mcp/` module. It does not mean the repo is running a full external MCP client/server integration.
-- For an illustrative comparison, see [`examples/langchain/explicit_pipeline.py`](examples/langchain/explicit_pipeline.py), which shows a simpler alternative that keeps the deterministic pipeline but collapses some wrapper layers. This example is not used by the app runtime.
+- For illustrative comparisons, see [`examples/langchain/illustrative_pipeline.py`](examples/langchain/illustrative_pipeline.py) and [`examples/langchain/illustrative_pipeline_with_mcp_seam.py`](examples/langchain/illustrative_pipeline_with_mcp_seam.py). These examples are not used by the app runtime.
+
+## Example Comparison
+
+`illustrative_pipeline.py`
+- Pros: shortest flow, easiest to scan, closest to the minimum deterministic pipeline this repo needs.
+- Cons: fewer structural seams if the system later grows in complexity.
+
+`illustrative_pipeline_with_mcp_seam.py`
+- Pros: clearer named tool boundaries, easier to imagine extension points for tool contracts or alternate backends.
+- Cons: adds indirection quickly, and for this repo may recreate some of the extra structure that already makes the main implementation harder to scan.
+
+For this repo's current scope, `illustrative_pipeline.py` is the better readability baseline.

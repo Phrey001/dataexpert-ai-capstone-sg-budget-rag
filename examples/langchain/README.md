@@ -14,3 +14,8 @@ Current production orchestration lives in:
 - `src/agents/specialists/service.py`
 
 The example here is for design comparison and practice only.
+
+Files:
+
+- `illustrative_pipeline.py`: the simpler deterministic baseline
+- `illustrative_pipeline_with_mcp_seam.py`: the same baseline with a small MCP-inspired tool seam added
